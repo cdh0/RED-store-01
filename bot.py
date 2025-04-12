@@ -8,7 +8,7 @@ from urllib.parse import urlparse, parse_qs
 from keep_alive import keep_alive
 
 bot = telebot.TeleBot('8193262941:AAF1P-o_LISQfl-PYiU26tBTk8jaIaqQVFs')
-
+admin_id=5412967206
 # إعداد AliExpress API
 aliexpress = AliexpressApi(
     '514130',
@@ -65,8 +65,68 @@ def get_product_info(link, chat_id):
         bot.send_message(chat_id, "حدث خطأ أثناء جلب بيانات المنتج.")
 
 # التعامل مع أي رابط
+@bot.message_handler(commands=["logs"])
+def send_logs(message):
+    if message.chat.id == ADMIN_ID:
+        try:
+            with open("logs.txt", "r", encoding="utf-8") as f:
+                logs = f.readlines()
+            last_logs = logs[-30:]  # آخر 30 رسالة
+
+            bot.send_message(message.chat.id, "".join(last_logs))
+
+            keyboard = types.InlineKeyboardMarkup()
+            download_button = types.InlineKeyboardButton("📥 تحميل السجل", callback_data="download_again")
+            keyboard.add(download_button)
+
+            bot.send_message(message.chat.id, "يمكنك تحميل السجل الكامل من الزر أدناه:", reply_markup=keyboard)
+        except Exception as e:
+            bot.send_message(message.chat.id, f"خطأ: {e}")
+    else:
+        bot.send_message(message.chat.id, "ماعندكش صلاحية.")
+
+@bot.message_handler(commands=["download"])
+def send_log_file(message):
+    if message.chat.id == ADMIN_ID:
+        try:
+            with open("logs.txt", "rb") as f:
+                bot.send_document(message.chat.id, f)
+
+            keyboard = types.InlineKeyboardMarkup()
+            download_button = types.InlineKeyboardButton("📥 تحميل السجل", callback_data="download_again")
+            keyboard.add(download_button)
+
+            bot.send_message(message.chat.id, "يمكنك تحميل السجل من الزر أيضاً:", reply_markup=keyboard)
+        except Exception as e:
+            bot.send_message(message.chat.id, f"خطأ: {e}")
+    else:
+        bot.send_message(message.chat.id, "ماعندكش صلاحية.")
+
+@bot.callback_query_handler(func=lambda call: call.data == "download_again")
+def resend_log_file(call):
+    if call.message.chat.id == ADMIN_ID:
+        try:
+            with open("logs.txt", "rb") as f:
+                bot.send_document(call.message.chat.id, f)
+        except:
+            bot.send_message(call.message.chat.id, "حدث خطأ أثناء إرسال الملف.")
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):
+    @bot.message_handler(func=lambda message: True)
+def handle_message(message):
+    user_id = message.from_user.id
+    username = message.from_user.username or "بدون اسم"
+    full_name = f"{message.from_user.first_name or ''} {message.from_user.last_name or ''}".strip()
+    text = message.text
+    chat_id = message.chat.id
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    log_line = f"[{timestamp}] {full_name} | @{username} | ID: {user_id} | ChatID: {chat_id}:\n{text}\n\n"
+
+    print(log_line)
+
+    with open("logs.txt", "a", encoding="utf-8") as f:
+        f.write(log_line)
      user_id = message.from_user.id
     username = message.from_user.username or "بدون اسم"
     full_name = f"{message.from_user.first_name or ''} {message.from_user.last_name or ''}".strip()
