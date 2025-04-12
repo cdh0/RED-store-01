@@ -121,8 +121,7 @@ def handle_message(message):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     log_line = f"[{timestamp}] {full_name} | @{username} | ID: {user_id} | ChatID: {chat_id}:\n{text}\n\n"
-{text}
-
+    
     print(log_line)
     with open("logs.txt", "a", encoding="utf-8") as f:
         f.write(log_line)
