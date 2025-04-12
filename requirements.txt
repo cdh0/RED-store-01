@@ -1,3 +1,5 @@
-pyTelegramBotAPI
+python-telegram-bot==20.3
 requests
 flask
+pytelegrambotapi
+py-aliexpress-api
