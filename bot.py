@@ -120,7 +120,7 @@ def handle_message(message):
     chat_id = message.chat.id
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    log_line = f"[{timestamp}] {full_name} | @{username} | ID: {user_id} | ChatID: {chat_id}:
+    log_line = f"[{timestamp}] {full_name} | @{username} | ID: {user_id} | ChatID: {chat_id}:\n{text}\n\n"
 {text}
 
 "
