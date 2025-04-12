@@ -67,6 +67,20 @@ def get_product_info(link, chat_id):
 # التعامل مع أي رابط
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):
+     user_id = message.from_user.id
+    username = message.from_user.username or "بدون اسم"
+    full_name = f"{message.from_user.first_name or ''} {message.from_user.last_name or ''}".strip()
+    text = message.text
+    chat_id = message.chat.id
+
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    log_line = f"[{timestamp}] {full_name} | @{username} | ID: {user_id} | ChatID: {chat_id}:\n{text}\n\n"
+
+    print(log_line)
+
+    with open("logs.txt", "a", encoding="utf-8") as f:
+        f.write(log_line)
     link = extract_link(message.text)
     if link and "aliexpress.com" in link:
         bot.send_message(message.chat.id, "⏳ يتم الآن معالجة الرابط...")
